@@ -104,6 +104,47 @@
           </div>
         </div>
       </div>
+
+      <!-- form chekcout -->
+      <div class="row justify-content-end">
+        <div class="col-md-4">
+          <form class="mt-3" v-on:submit.prevent>
+            <div class="form-group">
+              <div class="mb-3">
+                <label for="nama">Nama</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Masukkan Nama Produk Anda"
+                  id="inputNama"
+                  v-model="pesan.nama"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="mb-3">
+                <label for="noMeja">Nomer Meja</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Masukkan Nomer Meja Anda"
+                  id="inputNoMeja"
+                  v-model="pesan.noMeja"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-success float-right"
+              @click="checkout"
+              id="button-submit"
+            >
+              <b-icon-cart></b-icon-cart>
+              Pesan
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -120,6 +161,7 @@ export default {
   data() {
     return {
       keranjangs: [],
+      pesan: [],
     };
   },
   methods: {
@@ -131,7 +173,7 @@ export default {
     },
     hapusKeranjang(id) {
       axios
-        .delete("http://localhost:3000/keranjangs/" + id)
+        .delete("http://localhost:3000/pesanans/" + id)
         .then((response) => {
           console.log(response);
           this.$toast.success("Sukses hapus keranjang", {
@@ -156,6 +198,42 @@ export default {
           // handle error
           console.log("Terjadi kesalahan data", error)
         );
+    },
+    async checkout() {
+      if (this.pesan.nama && this.pesan.noMeja) {
+        this.pesan.keranjangs = this.keranjangs;
+        try {
+          await axios.post("http://localhost:3000/pesanans", this.pesan);
+
+          await Promise.all(
+            this.keranjangs.map((item) =>
+              axios.delete(`http://localhost:3000/keranjangs/${item.id}`)
+            )
+          );
+          this.$toast.success("Sukses Dipesan", {
+            type: "success",
+            position: "top-right",
+            duration: 3000,
+            dismissible: true,
+          });
+          this.$router.push({ path: "/pesanan-sukses" });
+        } catch (error) {
+          console.log("Terjadi kesalahan saat memproses pesanan", error);
+          this.$toast.error("Gagal memproses pesanan", {
+            type: "error",
+            position: "top-right",
+            duration: 3000,
+            dismissible: true,
+          });
+        }
+      } else {
+        this.$toast.error("Nama dan Nomer Meja harus diisi", {
+          type: "error",
+          position: "top-right",
+          duration: 3000,
+          dismissible: true,
+        });
+      }
     },
   },
   mounted() {

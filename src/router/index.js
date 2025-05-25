@@ -5,6 +5,7 @@ import AboutView from "../views/AboutView.vue";
 import FoodsView from "../views/FoodsView.vue";
 import FoodsDetail from "../views/FoodsDetail.vue";
 import KeranjangView from "../views/KeranjangView.vue";
+import PesananSuksesView from "../views/PesananSuksesView.vue";
 
 Vue.use(Router);
 
@@ -35,6 +36,11 @@ export default new Router({
       path: "/keranjang",
       name: "KeranjangView",
       component: KeranjangView,
+    },
+    {
+      path: "/pesanan-sukses",
+      name: "PesananSuksesView",
+      component: PesananSuksesView,
     },
   ],
 });
